@@ -2,6 +2,15 @@ name: Ubuntu
 
 on:
   workflow_dispatch:
+    inputs:
+      target:
+        description: ohos platform
+        type: choice
+        default: "armeabi-v7a"
+        options:
+          - "armeabi-v7a"
+          - "arm64-v8a"
+          - "x86_64"
 
 jobs:
   build:
@@ -12,11 +21,47 @@ jobs:
         with:
           fetch-depth: 1
 
+      # 缓存 OHOS SDK 的 native zip, 命中则跳过几 GB 的 tar.gz 下载
+      - name: cache ohos sdk zip
+        id: sdk_cache
+        uses: actions/cache@v4
+        with:
+          path: ~/ohos-sdk-cache
+          key: ohos-sdk-native-linux-x64-26.0.0.38
+
+      # 仅缓存未命中时执行: 下载完整 SDK tar.gz, 只抽出其中的 native zip
+      - name: download ohos sdk
+        if: steps.sdk_cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/ohos-sdk-cache
+          cd ~/ohos-sdk-cache
+          curl -fL --retry 3 --connect-timeout 30 -o ohos-sdk.tar.gz \
+            https://repo.huaweicloud.com/openharmony/os/7.0-Release/ohos-sdk-windows_linux-public_20260829.tar.gz
+          tar -xzf ohos-sdk.tar.gz --wildcards --no-anchored 'native-linux-x64-26.0.0.38-Release.zip'
+          zip_path=$(find . -name 'native-linux-x64-26.0.0.38-Release.zip' | head -n1)
+          if [ -z "$zip_path" ]; then
+            echo "native-linux-x64-26.0.0.38-Release.zip not found in tarball" >&2
+            exit 1
+          fi
+          mv -f "$zip_path" ./native-linux-x64-26.0.0.38-Release.zip
+          rm -f ohos-sdk.tar.gz
+
+      # 每次 run 都重新解压出 native 目录 (解压 zip 远快于重新下载 tar.gz)
+      - name: extract native sdk
+        run: |
+          rm -rf "$GITHUB_WORKSPACE/ohos-sdk"
+          mkdir -p "$GITHUB_WORKSPACE/ohos-sdk"
+          cd "$GITHUB_WORKSPACE/ohos-sdk"
+          unzip -q ~/ohos-sdk-cache/native-linux-x64-26.0.0.38-Release.zip
+          test -d native
+
       - name: build libusb
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential ca-certificates unzip patch autoconf automake libtool
-          bash ./build.sh
+          bash ./build.sh ${{inputs.target}}
+        env:
+          OHOS_SDK: ${{ github.workspace }}/ohos-sdk
 
       - uses: actions/upload-artifact@v4
         with:

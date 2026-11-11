@@ -6,8 +6,3 @@
 [编译环境配置](https://gitcode.com/openharmony/docs/blob/master/zh-cn/release-notes/OpenHarmony-v7.0-release.md)
 
 [ohos-sdk-windows_linux-public_20260829.tar.gz](https://repo.huaweicloud.com/openharmony/os/7.0-Release/ohos-sdk-windows_linux-public_20260829.tar.gz)
-
-下载 并解压
-https://repo.huaweicloud.com/openharmony/os/7.0-Release/ohos-sdk-windows_linux-public_20260829.tar.gz
-获取压缩包中的 native-linux-x64-26.0.0.38-Release.zip
-在解压 出一个 native目录

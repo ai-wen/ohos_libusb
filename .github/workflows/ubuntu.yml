@@ -6,7 +6,7 @@ on:
       target:
         description: ohos platform
         type: choice
-        default: "armeabi-v7a"
+        default: "arm64-v8a"
         options:
           - "armeabi-v7a"
           - "arm64-v8a"
@@ -21,16 +21,17 @@ jobs:
         with:
           fetch-depth: 1
 
-      # 缓存 OHOS SDK 的 native zip, 命中则跳过几 GB 的 tar.gz 下载
-      - name: cache ohos sdk zip
+      # 恢复缓存的 OHOS SDK native zip (命中则跳过几 GB 的 tar.gz 下载)
+      - name: restore ohos sdk zip cache
         id: sdk_cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/ohos-sdk-cache
           key: ohos-sdk-native-linux-x64-26.0.0.38
 
       # 仅缓存未命中时执行: 下载完整 SDK tar.gz, 只抽出其中的 native zip
       - name: download ohos sdk
+        id: sdk_download
         if: steps.sdk_cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p ~/ohos-sdk-cache
@@ -46,6 +47,15 @@ jobs:
           mv -f "$zip_path" ./native-linux-x64-26.0.0.38-Release.zip
           rm -f ohos-sdk.tar.gz
 
+      # 下载成功就立刻保存缓存 (默认 save 只在 job 成功后执行, 构建失败会丢缓存)
+      - name: save ohos sdk zip cache
+        if: always() && steps.sdk_download.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/ohos-sdk-cache
+          key: ohos-sdk-native-linux-x64-26.0.0.38
+        continue-on-error: true
+
       # 每次 run 都重新解压出 native 目录 (解压 zip 远快于重新下载 tar.gz)
       - name: extract native sdk
         run: |
@@ -53,6 +63,7 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/ohos-sdk"
           cd "$GITHUB_WORKSPACE/ohos-sdk"
           unzip -q ~/ohos-sdk-cache/native-linux-x64-26.0.0.38-Release.zip
+          chmod -f +x native/llvm/bin/* 2>/dev/null || true
           test -d native
 
       - name: build libusb
@@ -62,6 +73,12 @@ jobs:
           bash ./build.sh ${{inputs.target}}
         env:
           OHOS_SDK: ${{ github.workspace }}/ohos-sdk
+
+      # 构建失败时输出 config.log 尾部, 用于定位工具链问题
+      - name: dump config.log
+        if: failure()
+        run: |
+          tail -n 150 libusb-v1.0.26/config.log || true
 
       - uses: actions/upload-artifact@v4
         with:

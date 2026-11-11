@@ -63,12 +63,14 @@ hosts=("arm-linux" "aarch64-linux" "x86_64-linux")
 #source="https://gitee.com/mirrors/libusb/repository/archive/v1.0.26.zip"
 #https://repo.huaweicloud.com/openharmony/os/7.0-Release/ohos-sdk-windows_linux-public_20260829.tar.gz
 
+OHOS_SDK=$(pwd)
+
 #unzip native-linux-x64-26.0.0.38-Release.zip
 unzip libusb-v1.0.26.zip
 cd libusb-v1.0.26
 patch -p1 < ../libusb_ohos.patch
 
-OHOS_SDK=$(pwd)
+
 
 for i in "${!archs[@]}"; do
     arch="${archs[$i]}"

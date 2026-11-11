@@ -71,14 +71,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential ca-certificates unzip patch autoconf automake libtool
           bash ./build.sh ${{inputs.target}}
+          tail -n 150 libusb-v1.0.26/config.log
         env:
           OHOS_SDK: ${{ github.workspace }}/ohos-sdk
-
-      # 构建失败时输出 config.log 尾部, 用于定位工具链问题
-      - name: dump config.log
-        if: failure()
-        run: |
-          tail -n 150 libusb-v1.0.26/config.log || true
 
       - uses: actions/upload-artifact@v4
         with:

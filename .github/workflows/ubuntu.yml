@@ -13,9 +13,9 @@ jobs:
           fetch-depth: 1
 
       # 实测 trusty 仍在官方主源 archive.ubuntu.com 上, 无需切换 old-releases
-      - name: build ubuntu (Qt 5.2.1 in docker)
+      - name: build libusb
         run: >
-          apt-get install -y build-essential ca-certificates \
+          sudo apt-get install -y build-essential ca-certificates \
           ./build.sh
 
       - uses: actions/upload-artifact@v4

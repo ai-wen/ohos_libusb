@@ -113,8 +113,8 @@ for i in "${!archs[@]}"; do
 
     echo "arch=$arch host=$host"
     echo "$CC"
-    export CFLAGS="$CFLAGS -g -O0"
-    export CXXFLAGS="$CXXFLAGS -g -O0"
+    #export CFLAGS="$CFLAGS -g -O0"
+    #export CXXFLAGS="$CXXFLAGS -g -O0"
     autoreconf -ifv
     ./configure --host=$host --disable-udev --enable-static=yes
     make -j$(nproc)

@@ -2,8 +2,8 @@ set -e
 
 setarm32ENV() {
     export AS=${OHOS_SDK}/native/llvm/bin/llvm-as
-    export CC=${OHOS_SDK}/native/llvm/bin/arm-linux-ohos-clang
-    export CXX=${OHOS_SDK}/native/llvm/bin/arm-linux-ohos-clang++
+    export CC="${OHOS_SDK}/native/llvm/bin/clang --target=arm-linux-ohos --sysroot=${SYSROOT}"
+    export CXX="${OHOS_SDK}/native/llvm/bin/clang++ --target=arm-linux-ohos --sysroot=${SYSROOT}"
     export LD=${OHOS_SDK}/native/llvm/bin/ld.lld
     export STRIP=${OHOS_SDK}/native/llvm/bin/llvm-strip
     export RANLIB=${OHOS_SDK}/native/llvm/bin/llvm-ranlib
@@ -22,8 +22,8 @@ unsetarm32ENV() {
 
 setarm64ENV() {
   export AS=${OHOS_SDK}/native/llvm/bin/llvm-as
-    export CC=${OHOS_SDK}/native/llvm/bin/aarch64-linux-ohos-clang
-    export CXX=${OHOS_SDK}/native/llvm/bin/aarch64-linux-ohos-clang++
+    export CC="${OHOS_SDK}/native/llvm/bin/clang --target=aarch64-linux-ohos --sysroot=${SYSROOT}"
+    export CXX="${OHOS_SDK}/native/llvm/bin/clang++ --target=aarch64-linux-ohos --sysroot=${SYSROOT}"
     export LD=${OHOS_SDK}/native/llvm/bin/ld.lld
     export STRIP=${OHOS_SDK}/native/llvm/bin/llvm-strip
     export RANLIB=${OHOS_SDK}/native/llvm/bin/llvm-ranlib
@@ -42,8 +42,8 @@ unsetarm64ENV() {
 
 setx86_64ENV() {
   export AS=${OHOS_SDK}/native/llvm/bin/llvm-as
-    export CC=${OHOS_SDK}/native/llvm/bin/x86_64-linux-ohos-clang
-    export CXX=${OHOS_SDK}/native/llvm/bin/x86_64-linux-ohos-clang++
+    export CC="${OHOS_SDK}/native/llvm/bin/clang --target=x86_64-linux-ohos --sysroot=${SYSROOT}"
+    export CXX="${OHOS_SDK}/native/llvm/bin/clang++ --target=x86_64-linux-ohos --sysroot=${SYSROOT}"
     export LD=${OHOS_SDK}/native/llvm/bin/ld.lld
     export STRIP=${OHOS_SDK}/native/llvm/bin/llvm-strip
     export RANLIB=${OHOS_SDK}/native/llvm/bin/llvm-ranlib

@@ -65,7 +65,7 @@ jobs:
           unzip -q ~/ohos-sdk-cache/native-linux-x64-26.0.0.38-Release.zip
           chmod -f +x native/llvm/bin/* 2>/dev/null || true
           test -d native
-          ldd native/llvm/bin/aarch64-linux-ohos-clang
+          ldd native/llvm/bin/clang
 
       - name: build libusb
         run: |
